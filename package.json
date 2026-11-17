@@ -1,0 +1,10 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CampusFind — Lost & Found Portal (Spring Boot + static frontend)",
+  "scripts": {
+    "dev": "echo 'This project uses Spring Boot. Run: cd backend && ./mvnw spring-boot:run'"
+  },
+  "dependencies": {}
+}
