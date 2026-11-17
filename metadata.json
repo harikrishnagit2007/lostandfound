@@ -1,0 +1,8 @@
+{
+  "name": "CampusFind — Lost & Found Portal",
+  "description": "A campus community lost and found portal to report, search, and manage lost and found items.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
