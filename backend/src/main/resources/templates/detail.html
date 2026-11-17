@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments :: head(${item.title})}"></head>
+<body>
+<div th:replace="~{fragments :: nav}"></div>
+
+<main class="wrap narrow">
+    <a class="back" th:href="@{/}">← Back to all items</a>
+
+    <div class="flash" th:if="${flash}" th:text="${flash}"></div>
+    <div class="error-box" th:if="${error}" th:text="${error}"></div>
+
+    <article class="detail">
+        <div class="detail-img" th:if="${item.imagePath != null}">
+            <img th:src="@{'/uploads/' + ${item.imagePath}}" th:alt="${item.title}">
+        </div>
+
+        <div class="detail-head">
+            <span class="badge inline" th:classappend="${item.type.name() == 'LOST'} ? 'badge-lost' : 'badge-found'" th:text="${item.type.label}">Lost</span>
+            <span class="badge inline badge-done" th:if="${item.status.name() == 'RESOLVED'}">Resolved</span>
+            <h1 th:text="${item.title}">Title</h1>
+        </div>
+
+        <dl class="facts">
+            <div><dt>Category</dt><dd th:text="${item.category}"></dd></div>
+            <div><dt>Where</dt><dd th:text="${item.location}"></dd></div>
+            <div><dt th:text="${item.type.name() == 'LOST'} ? 'Lost on' : 'Found on'">Date</dt><dd th:text="${#temporals.format(item.eventDate, 'dd MMM yyyy')}"></dd></div>
+            <div><dt>Posted</dt><dd th:text="${#temporals.format(item.createdAt, 'dd MMM yyyy, HH:mm')}"></dd></div>
+        </dl>
+
+        <section th:if="${item.description != null and !item.description.isBlank()}">
+            <h2>Description</h2>
+            <p class="desc" th:text="${item.description}"></p>
+        </section>
+
+        <section class="contact" th:if="${item.status.name() == 'OPEN'}">
+            <h2>Contact</h2>
+            <p><strong th:text="${item.contactName}">Name</strong><br>
+               <span th:text="${item.contactInfo}">info</span></p>
+            <a class="btn" th:if="${item.contactInfo.contains('@')}" th:href="'mailto:' + ${item.contactInfo} + '?subject=' + ${item.title} + ' (Campus Lost %26 Found)'">Send email</a>
+        </section>
+
+        <section class="manage" th:if="${item.status.name() == 'OPEN'}">
+            <details>
+                <summary>This is my post</summary>
+                <p class="hint">Enter your secret code to manage this post.</p>
+                <form method="post" th:action="@{/items/{id}/resolve(id=${item.id})}" class="inline-form">
+                    <input type="text" name="code" placeholder="Secret code" required autocomplete="off">
+                    <button class="btn btn-found" type="submit" th:text="${item.type.name() == 'LOST'} ? 'Mark as found / returned' : 'Mark as returned to owner'">Resolve</button>
+                </form>
+                <form method="post" th:action="@{/items/{id}/delete(id=${item.id})}" class="inline-form" onsubmit="return confirm('Delete this post permanently?')">
+                    <input type="text" name="code" placeholder="Secret code" required autocomplete="off">
+                    <button class="btn btn-danger" type="submit">Delete post</button>
+                </form>
+            </details>
+        </section>
+
+        <section class="manage" th:if="${item.status.name() == 'RESOLVED'}">
+            <p class="hint">This item has been resolved. 🎉</p>
+            <details>
+                <summary>Delete this post</summary>
+                <form method="post" th:action="@{/items/{id}/delete(id=${item.id})}" class="inline-form" onsubmit="return confirm('Delete this post permanently?')">
+                    <input type="text" name="code" placeholder="Secret code" required autocomplete="off">
+                    <button class="btn btn-danger" type="submit">Delete post</button>
+                </form>
+            </details>
+        </section>
+    </article>
+</main>
+
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>

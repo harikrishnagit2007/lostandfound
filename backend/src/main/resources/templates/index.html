@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments :: head('Browse')}"></head>
+<body>
+<div th:replace="~{fragments :: nav}"></div>
+
+<section class="hero">
+    <div class="wrap">
+        <h1>Lost something on campus?<br><em>Let's find it.</em></h1>
+        <p>Search items reported by students and staff, or post what you've lost or found.</p>
+        <form class="search" th:action="@{/}" method="get">
+            <input type="search" name="q" th:value="${q}" placeholder="Search e.g. blue bottle, library, ID card…" aria-label="Search">
+            <input type="hidden" name="type" th:value="${type}">
+            <input type="hidden" name="category" th:value="${category}">
+            <input type="hidden" name="showResolved" th:value="${showResolved}">
+            <button class="btn" type="submit">Search</button>
+        </form>
+        <div class="stats">
+            <span><strong th:text="${lostCount}">0</strong> lost</span>
+            <span><strong th:text="${foundCount}">0</strong> found</span>
+            <span><strong th:text="${resolvedCount}">0</strong> reunited</span>
+        </div>
+    </div>
+</section>
+
+<main class="wrap">
+    <div class="flash" th:if="${flash}" th:text="${flash}"></div>
+
+    <form class="filters" th:action="@{/}" method="get">
+        <input type="hidden" name="q" th:value="${q}">
+        <div class="tabs">
+            <a th:href="@{/(q=${q},category=${category},showResolved=${showResolved})}" th:classappend="${type == ''} ? 'active'">All</a>
+            <a th:href="@{/(type=LOST,q=${q},category=${category},showResolved=${showResolved})}" th:classappend="${type == 'LOST'} ? 'active'">Lost</a>
+            <a th:href="@{/(type=FOUND,q=${q},category=${category},showResolved=${showResolved})}" th:classappend="${type == 'FOUND'} ? 'active'">Found</a>
+        </div>
+        <input type="hidden" name="type" th:value="${type}">
+        <select name="category" onchange="this.form.submit()" aria-label="Category">
+            <option value="">All categories</option>
+            <option th:each="c : ${categories}" th:value="${c}" th:text="${c}" th:selected="${c == category}"></option>
+        </select>
+        <label class="check">
+            <input type="checkbox" name="showResolved" value="true" th:checked="${showResolved}" onchange="this.form.submit()">
+            Show resolved
+        </label>
+    </form>
+
+    <p class="count" th:text="${items.size()} + (${items.size() == 1} ? ' item' : ' items')">0 items</p>
+
+    <div class="grid" th:if="${!items.isEmpty()}">
+        <a class="card" th:each="i : ${items}" th:href="@{/items/{id}(id=${i.id})}" th:classappend="${i.status.name() == 'RESOLVED'} ? 'resolved'">
+            <div class="thumb">
+                <img th:if="${i.imagePath != null}" th:src="@{'/uploads/' + ${i.imagePath}}" th:alt="${i.title}" loading="lazy">
+                <div class="thumb-empty" th:if="${i.imagePath == null}" th:text="${i.category}">Category</div>
+                <span class="badge" th:classappend="${i.type.name() == 'LOST'} ? 'badge-lost' : 'badge-found'" th:text="${i.type.label}">Lost</span>
+                <span class="badge badge-done" th:if="${i.status.name() == 'RESOLVED'}">Resolved</span>
+            </div>
+            <div class="card-body">
+                <h3 th:text="${i.title}">Title</h3>
+                <p class="meta">📍 <span th:text="${i.location}">Location</span></p>
+                <p class="meta">🗓 <span th:text="${#temporals.format(i.eventDate, 'dd MMM yyyy')}">Date</span> · <span th:text="${i.category}">Cat</span></p>
+            </div>
+        </a>
+    </div>
+
+    <div class="empty" th:if="${items.isEmpty()}">
+        <h3>Nothing here yet</h3>
+        <p>Try a different search, or be the first to post.</p>
+        <a class="btn btn-lost" th:href="@{/items/new(type=LOST)}">Report lost item</a>
+        <a class="btn btn-found" th:href="@{/items/new(type=FOUND)}">Report found item</a>
+    </div>
+</main>
+
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+CAMPUSFIND — RECOVERED FRONTEND + JDBC BACKEND
+
+IMPORTANT
+The original frontend source file could not be downloaded from the public Netlify page. The frontend in this package is reconstructed from the live page's visible content and design, then wired to the existing Spring Boot JDBC API. It is a working integration package, not a live deployment. You must deploy the backend and configure the database before reports can be shared between devices.
+
+FOLDER STRUCTURE
+frontend-netlify/  -> deploy this folder's contents to Netlify
+backend/           -> Java 21 + Spring Boot + JDBC + MySQL backend
+
+A. MYSQL DATABASE
+Run in MySQL Workbench:
+  CREATE DATABASE lostfound;
+The backend automatically creates the items table using schema.sql.
+
+B. RUN BACKEND LOCALLY
+1. Install Java 21 and MySQL.
+2. In backend/, open src/main/resources/application.properties.
+3. Set DB_USERNAME and DB_PASSWORD environment variables, or edit the local defaults.
+4. Run on Windows:
+   mvnw.cmd spring-boot:run
+5. Test:
+   http://localhost:8080/api/health
+
+C. DEPLOY BACKEND
+Deploy the backend/ folder to a Java/Docker-capable host (Railway, Render, or similar) and attach a managed MySQL database. Set these environment variables on the host:
+  DB_URL=jdbc:mysql://HOST:3306/lostfound?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=UTC
+  DB_USERNAME=your_database_user
+  DB_PASSWORD=your_database_password
+  FRONTEND_ORIGIN=https://aquamarine-bubblegum-562feb.netlify.app
+  PORT=8080 (if your host requires it; Spring reads PORT)
+
+The database provider's exact hostname, database name, SSL settings, and credentials must come from your own database service. Never publish these credentials in the frontend or GitHub.
+
+D. CONNECT NETLIFY FRONTEND
+1. Open frontend-netlify/assets/config.js.
+2. Replace https://YOUR-BACKEND-URL with your deployed backend URL (no trailing slash).
+3. In Netlify, deploy the CONTENTS of frontend-netlify/ as the site publish directory. For a manual deploy, drag the frontend-netlify folder contents into Netlify Drop.
+4. If Netlify assigns a different site URL, update FRONTEND_ORIGIN on the backend to that exact origin.
+5. Test the frontend from two separate devices. Publish a test item on one and refresh the other.
+
+NOTES
+- Reports are stored in MySQL and can be shared across devices once the backend/database are deployed.
+- Uploaded images are stored in the backend uploads/ directory. Many free hosting filesystems are temporary; for production, use persistent storage or object storage for images.
+- This package has not been deployed because it requires your hosting account and managed database credentials. Do not share passwords in chat; enter them only in your provider dashboard.

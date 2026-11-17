@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' · Campus Lost & Found'">Campus Lost & Found</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header" th:fragment="nav">
+    <div class="wrap nav">
+        <a class="brand" th:href="@{/}"><span class="brand-mark">🔍</span> Campus <em>Lost &amp; Found</em></a>
+        <nav>
+            <a th:href="@{/}">Browse</a>
+            <a class="btn btn-small btn-lost" th:href="@{/items/new(type=LOST)}">I lost something</a>
+            <a class="btn btn-small btn-found" th:href="@{/items/new(type=FOUND)}">I found something</a>
+        </nav>
+    </div>
+</header>
+<footer class="site-footer" th:fragment="footer">
+    <div class="wrap">
+        <p>Be kind, be honest. Always meet in a public campus spot and ask for proof of ownership before handing items over.</p>
+        <p class="muted">Campus Lost &amp; Found</p>
+    </div>
+</footer>
+</body>
+</html>

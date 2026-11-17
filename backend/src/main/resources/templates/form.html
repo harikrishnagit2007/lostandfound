@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments :: head('Report an item')}"></head>
+<body>
+<div th:replace="~{fragments :: nav}"></div>
+
+<main class="wrap narrow">
+    <h1 class="page-title" th:text="${item.type.name() == 'LOST'} ? 'Report a lost item' : 'Report a found item'">Report</h1>
+
+    <div class="error-box" th:if="${errors != null}">
+        <ul><li th:each="e : ${errors}" th:text="${e}"></li></ul>
+    </div>
+
+    <form class="form" th:action="@{/items}" method="post" enctype="multipart/form-data" th:object="${item}">
+        <div class="field">
+            <label>What happened?</label>
+            <div class="seg">
+                <label><input type="radio" th:field="*{type}" value="LOST"><span>I lost it</span></label>
+                <label><input type="radio" th:field="*{type}" value="FOUND"><span>I found it</span></label>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="title">Item name *</label>
+            <input id="title" type="text" th:field="*{title}" maxlength="120" placeholder="e.g. Black Casio calculator" required>
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label for="category">Category *</label>
+                <select id="category" th:field="*{category}" required>
+                    <option value="">Choose…</option>
+                    <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="eventDate">Date *</label>
+                <input id="eventDate" type="date" th:field="*{eventDate}" required>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="location">Where? *</label>
+            <input id="location" type="text" th:field="*{location}" maxlength="150" placeholder="e.g. Main library, 2nd floor" required>
+        </div>
+
+        <div class="field">
+            <label for="description">Description</label>
+            <textarea id="description" th:field="*{description}" rows="4" maxlength="2000" placeholder="Colour, brand, marks, what's inside… For found items, leave out one detail so you can verify the real owner."></textarea>
+        </div>
+
+        <div class="field">
+            <label for="image">Photo (optional, max 5MB)</label>
+            <input id="image" type="file" name="image" accept="image/*">
+        </div>
+
+        <fieldset>
+            <legend>Contact details</legend>
+            <div class="row">
+                <div class="field">
+                    <label for="contactName">Your name *</label>
+                    <input id="contactName" type="text" th:field="*{contactName}" maxlength="100" required>
+                </div>
+                <div class="field">
+                    <label for="contactInfo">Email or phone *</label>
+                    <input id="contactInfo" type="text" th:field="*{contactInfo}" maxlength="150" required>
+                </div>
+            </div>
+            <div class="field">
+                <label for="manageCode">Secret code * <small>(4–20 characters)</small></label>
+                <input id="manageCode" type="text" th:field="*{manageCode}" maxlength="20" minlength="4" required autocomplete="off">
+                <small class="hint">You'll need this code to mark the post resolved or delete it. Don't share it.</small>
+            </div>
+        </fieldset>
+
+        <button class="btn btn-big" type="submit">Publish post</button>
+        <a class="btn btn-ghost" th:href="@{/}">Cancel</a>
+    </form>
+</main>
+
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>
